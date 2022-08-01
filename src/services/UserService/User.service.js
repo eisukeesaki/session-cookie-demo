@@ -5,13 +5,17 @@ var UserService = {};
 UserService.getUserById = function(id) {
   l.info("fetching user record by userId = %s ...", id);
 
-  if (id === 42) {
-    const user = { id: 42, username: "Alice" };
+  if (id === 2) {
+    const user = { id: 2, username: "asuka" };
     l.info("user record found.", user);
 
     return user;
-  }
-  else {
+  } else if (id === 0) {
+    const user = { id: 0, username: "rei" };
+    l.info("user record found.", user);
+
+    return user;
+  } else {
     l.info("user record not found.");
     return null;
   }
@@ -20,13 +24,17 @@ UserService.getUserById = function(id) {
 UserService.getUser = function(username, password) {
   l.info("fetching user record by username = %s password = %s ...", username, password);
 
-  if (username === "alice" && password === "letmein") {
-    const user = { id: 42, username: "Alice" };
+  if (username === "asuka" && password === "letasukain") {
+    const user = { id: 2, username: "asuka" };
     l.info("user record found.", user);
 
     return user;
-  }
-  else {
+  } else if (username === "rei" && password === "letreiin") {
+    const user = { id: 0, username: "rei" };
+    l.info("user record found.", user);
+
+    return user;
+  } else {
     l.info("user record not found.");
     return null;
   }

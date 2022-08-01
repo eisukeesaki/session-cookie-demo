@@ -1,0 +1,3 @@
+issues
+    ✓test with different, hard-coded credentials
+    setup Redis to use as session store

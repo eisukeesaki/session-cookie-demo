@@ -13,9 +13,8 @@ const sessionOpts = {
   secret: "1d3c951c-994d-416d-8b63-c1dd4437eb7b",
   unset: "keep",
   cookie: {
-    expires: new Date("2022-12-31T23:59:59"),
+    expires: new Date("2022-08-31T16:59:59"),
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 31 * 1000,
     path: "/",
     sameSite: true,
     secure: false,
@@ -48,7 +47,8 @@ app.get("/",
     } else
       return res.redirect("/login");
 
-    res.send("if you are seeing this you are authenticated and have a valid session");
+    req.session.nVisits++;
+    res.send(`Yout have visited ${req.session.nVisits} times.\nIf you are seeing this you are authenticated and have a valid session`);
   }
 );
 
@@ -76,8 +76,10 @@ app.post("/login",
     const { username, password } = req.body;
     const user = userService.getUser(username, password);
 
-    if (user && req.session)
+    if (user && req.session) {
       req.session.userId = user.id;
+      req.session.nVisits = 0;
+    }
     else
       res.status(401).send("invalid username or password");
 
