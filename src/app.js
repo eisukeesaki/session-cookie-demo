@@ -1,12 +1,41 @@
+const path = require("path");
+const express = require("express");
+const session = require("express-session");
+const redis = require("redis");
+const connectRedis = require("connect-redis");
 const { logger: l, logRequest, logSession } =
   require("@utils/logger.util");
-const express = require("express"),
-  app = express();
-const session = require("express-session");
-const path = require("path");
 const userService = require("./services/index");
 
-const sessionOpts = {
+const redisClient = redis.createClient({
+  legacyMode: true,
+  socket: {
+    host: "127.0.0.1",
+    port: 6379
+  }
+});
+const RedisStore = connectRedis(session);
+
+redisClient.on("connect", () => {
+  l.info("Redis client connected to server");
+});
+redisClient.on("error", (err) => {
+  l.info("Redis error: ", err);
+});
+
+(async function initRedis() {
+  try {
+    await redisClient.connect();
+  } catch (err) {
+    l.info("Redis client failed to initiate connection to server", err);
+  }
+})();
+
+const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
   name: "SID",
   resave: false,
   saveUninitialized: true,
@@ -18,11 +47,14 @@ const sessionOpts = {
     path: "/",
     sameSite: true,
     secure: false,
-  }
-}
-
-app.use(express.urlencoded({ extended: false }));
-app.use(session(sessionOpts));
+  },
+  store: new RedisStore({
+    host: "127.0.0.1",
+    port: 6379,
+    client: redisClient,
+    ttl: 86400
+  })
+}));
 app.use(logRequest);
 
 /* send protected resource to client
@@ -51,6 +83,7 @@ app.get("/",
     else
       req.session.pageViews++;
 
+    req.write
     res.send(`Page views: ${req.session.pageViews}\nExpires: ${req.session.cookie._expires}`);
   }
 );
