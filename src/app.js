@@ -83,7 +83,6 @@ app.get("/",
     else
       req.session.pageViews++;
 
-    req.write
     res.send(`Page views: ${req.session.pageViews}\nExpires: ${req.session.cookie._expires}`);
   }
 );

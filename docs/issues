@@ -1,3 +1,6 @@
 issues
     ✓test with different, hard-coded credentials
-    setup Redis to use as session store
+    ✓setup Redis to use as session store
+    refactor app.js
+        move route code to src/routes/all.route.js
+        move Redis code to src/boot/redis.boot.js
