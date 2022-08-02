@@ -41,14 +41,17 @@ app.get("/",
   (req, res) => {
     if (req.session) {
       const user = userService.getUserById(req.session && req.session.userId);
-
       if (!user)
         return res.redirect("/login");
     } else
       return res.redirect("/login");
 
-    req.session.nVisits++;
-    res.send(`Yout have visited ${req.session.nVisits} times.\nIf you are seeing this you are authenticated and have a valid session`);
+    if (!req.session.pageViews)
+      req.session.pageViews = 1;
+    else
+      req.session.pageViews++;
+
+    res.send(`Page views: ${req.session.pageViews}\nExpires: ${req.session.cookie._expires}`);
   }
 );
 
@@ -76,10 +79,8 @@ app.post("/login",
     const { username, password } = req.body;
     const user = userService.getUser(username, password);
 
-    if (user && req.session) {
+    if (user && req.session)
       req.session.userId = user.id;
-      req.session.nVisits = 0;
-    }
     else
       res.status(401).send("invalid username or password");
 
